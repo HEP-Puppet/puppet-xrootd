@@ -26,17 +26,14 @@ XROOTD_GROUP=<%= @xrootd_group %>
 <% option_type.sort.map do |instance, options| -%>
 XROOTD_<%= instance.upcase %>_OPTIONS="<%= options %>"
 <% end -%><% end -%><% end -%>
-
 <% if @cmsd_instances_options -%>
 <% @cmsd_instances_options.sort.map do |instance, options| -%>
 CMSD_<%= instance.upcase %>_OPTIONS="<%= options %>"
 <% end -%><% end -%>
-
 <% if @purd_instances_options -%>
 <% @purd_instances_options.sort.map do |instance, options| -%>
 PURD_<%= instance.upcase %>_OPTIONS="<%= options %>"
 <% end -%><% end -%>
-
 <% if @xfrd_instances_options -%>
 <% @xfrd_instances_options.sort.map do |instance, options| -%>
 XFRD_<%= instance.upcase %>_OPTIONS="<%= options %>"
@@ -53,19 +50,16 @@ XROOTD_INSTANCES="<% -%>
 <% option_type.sort.map do |instance, options| -%>
   <%= instance -%>
 <% end -%><% end -%>"<% end %>
-
 <% if @cmsd_instances_options -%>
 CMSD_INSTANCES="<% -%>
 <% @cmsd_instances_options.sort.map do |instance, options| -%>
   <%= instance -%>
 <% end -%>"<% end %>
-
 <% if @purd_instances_options -%>
 PURD_INSTANCES="<% -%>
 <% @purd_instances_options.sort.map do |instance, options| -%>
   <%= instance -%>
 <% end -%>"<% end %>
-
 <% if @xfrd_instances_options -%>
 XFRD_INSTANCES="<% -%>
 <% @xfrd_instances_options.sort.map do |instance, options| -%>
@@ -77,11 +71,17 @@ XFRD_INSTANCES="<% -%>
 export <%= key %>=<%= val %>
 <% end -%>
 <% end -%>
+<% if @jemalloc -%>
+LD_PRELOAD=<%= @jemalloc %>
+<% else -%>
+MALLOC_ARENA_MAX=4
+<% end -%>
 
 <% if @daemon_corefile_limit -%>
 DAEMON_COREFILE_LIMIT=<%= @daemon_corefile_limit %>
 <% end -%>
 
 <% if @enable_hdfs -%>
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<%= @java_home %>/jre/lib/amd64/server/
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<%= @java_home %>/jre/lib/amd64/server/
+export LD_LIBRARY_PATH
 <% end -%>

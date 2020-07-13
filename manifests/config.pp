@@ -6,21 +6,30 @@ class xrootd::config (
   $configdir = $xrootd::params::configdir,
   $logdir = $xrootd::params::logdir,
   $spooldir = $xrootd::params::spooldir,
+  $all_pidpath = $xrootd::params::all_pidpath,
+  $runtime_dir = $xrootd::params::runtime_dir,
+  $after_conf = $xrootd::params::after_conf
 
 ) inherits xrootd::params {
 
   include fetchcrl
 
-  exec {"run-fetchcrl-atleastonce":
-    path    => "/bin:/usr/bin:/sbin:/usr/sbin",
-    command => "fetch-crl",
-    unless  => "ls /etc/grid-security/certificates/*.r0"
+  exec {'run-fetchcrl-atleastonce':
+    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command => 'fetch-crl',
+    unless  => 'ls /etc/grid-security/certificates/*.r0'
   }
 
-  if $::architecture == "x86_64" {
-    $xrdlibdir = "lib64"
+  exec {
+    'systemctl-daemon-reload-xrootd':
+      command     => '/usr/bin/systemctl daemon-reload',
+      refreshonly => true,
+  }
+
+  if $facts['os']['architecture'] == 'x86_64' {
+    $xrdlibdir = 'lib64'
   } else {
-    $xrdlibdir = "lib"
+    $xrdlibdir = 'lib'
   }
 
   file {$configdir:
@@ -34,9 +43,16 @@ class xrootd::config (
     owner  => $xrootd_user,
     group  => $xrootd_group
   }
+
   file {$spooldir:
-   ensure => directory,
-   owner  => $xrootd_user,
-   group  => $xrootd_group
- }
+    ensure => directory,
+    owner  => $xrootd_user,
+    group  => $xrootd_group
+  }
+
+  file {$all_pidpath:
+    ensure => directory,
+    owner  => $xrootd_user,
+    group  => $xrootd_group
+  }
 }

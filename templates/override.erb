@@ -1,0 +1,27 @@
+[Unit]
+After=<%= @after_conf %>
+
+[Service]
+User=<%= @xrootd_user %>
+Group=<%= @xrootd_group %>
+RuntimeDirectory=<%= @runtime_dir %>
+
+<% if @exports -%>
+<% @exports.sort.map do |key,val| -%>
+Environment=<%= key %>=<%= val %>
+<% end -%>
+<% end -%>
+<% if @jemalloc -%>
+Environment=LD_PRELOAD=<%= @jemalloc %>
+<% else -%>
+Environment=MALLOC_ARENA_MAX=4
+<% end -%>
+
+LimitCORE=infinity
+<% if @daemon_corefile_limit -%>
+Environment=DAEMON_COREFILE_LIMIT=<%= @daemon_corefile_limit %>
+<% end -%>
+
+<% if @enable_hdfs -%>
+Environment=LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<%= @java_home %>/jre/lib/amd64/server/
+<% end -%>
